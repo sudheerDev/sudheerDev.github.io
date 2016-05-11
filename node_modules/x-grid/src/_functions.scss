@@ -1,0 +1,96 @@
+
+///mixin to create clear columns classes
+///parameters include $screen- and $range: "up","only","down";
+/// @group API
+///@author sudheer
+@function media-querie($screen,$range) {
+
+  $range-value: map-has-key($screen-list, $screen);
+
+  @if $range-value {
+    @if $range == "up" {
+      $lower-boundary: get-map-values($screen,range,$value-index:1);
+      @return "only screen and (min-width:#{$lower-boundary})";
+    } @else if $range == "only" {
+      $lower-boundary: get-map-values($screen,range,$value-index:1);
+      $upper-boundary: get-map-values($screen,range,$value-index:2);
+      @return "only screen and (min-width:#{$lower-boundary}) and (max-width:#{$upper-boundary})";
+    } @else if $range == "down" {
+      $upper-boundary: get-map-values($screen,range,$value-index:2);
+      @return "only screen and (max-width:#{$upper-boundary})";
+    }
+  } @else {
+    @return false;
+  }
+
+}
+
+
+@function column-width-calc($colNumber, $totalColumns) {
+  @return percentage(($colNumber / $totalColumns));
+}
+
+@function get-map-values($screen,$key,$map:$screen-list,$value-index: false) {
+
+  @if map-has-key($map,$screen) {
+    $screen-values: map-get($map,$screen);
+    $key-values: map-get($screen-values,$key);
+      @if $value-index {
+          @return nth($key-values,$value-index);
+      }
+    @return $key-values;
+
+  } @else {
+    @return false;
+  }
+
+}
+
+@function strip-unit($num) {
+  @return $num / ($num * 0 + 1);
+}
+
+// CONVERT TO REM
+@function convert-to-rem($value, $base-value: $rem-base)  {
+  $value: strip-unit($value) / strip-unit($base-value) * 1rem;
+  @if ($value == 0rem) { $value: 0; } // Turn 0rem into 0
+  @return $value;
+}
+
+@function rem-calc($values, $base-value: $base-rem-unit) {
+  $max: length($values);
+
+  @if $max == 1 { @return convert-to-rem(nth($values, 1), $base-value); }
+
+  $remValues: ();
+  @for $i from 1 through $max {
+    $remValues: append($remValues, convert-to-rem(nth($values, $i), $base-value));
+  }
+  @return $remValues;
+}
+
+@function append-tags($list,$font-tag) {
+  @return $font-tag+","+$list;
+}
+
+
+@function to-list($value) {
+  @return if(type-of($value) != list, ($value,), $value);
+}
+
+@function make-grid-class($value,$screen,$range:false) {
+
+  @if map-has-key(map-get($class-names,screen-names),$screen) {
+
+    @if $range { @return get-map-values(helpers,$value,$class-names)+get-map-values(screen-names,$screen,$class-names) + get-map-values(helpers,$range,$class-names);}
+    @else { @return #{get-map-values(screen-names,$screen,$class-names) + get-map-values(helpers,$value,$class-names)};}
+
+  } @else {
+
+    @warn "screen name is not defined in $class-list, so class nem is generated with the default screen name";
+
+    @if $range { @return get-map-values(helpers,$value,$class-names)+ $screen + get-map-values(helpers,$range,$class-names);}
+    @else { @return #{ $screen + get-map-values(helpers,$value,$class-names)};}
+
+  }
+}

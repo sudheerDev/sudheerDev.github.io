@@ -1,0 +1,292 @@
+$header-sizes: (
+  default: (
+    h1: rem-calc(44),
+    h2: rem-calc(37),
+    h3: rem-calc(27),
+    h4: rem-calc(23),
+    h5: rem-calc(18),
+    h6: rem-calc(16)),
+  medium: (
+    range: up,
+    scale: 1.2
+  )
+) !default ;
+
+$header-properties: (
+  default: (
+    font-family: ("Helvetica Neue", Helvetica, Roboto, Arial, sans-serif ),
+    font-weight: normal ,
+    font-style: normal ,
+    font-color: #000,
+    margin:0px 5px,
+    text-rendering: optimizeLegibility ),
+  medium: (
+    line-height: 1.4
+  )
+);
+
+$ptag-properties: (
+  default: (
+    font-family: ("Helvetica Neue", Helvetica, Roboto, Arial, sans-serif ),
+    font-weight: normal ,
+    font-style: normal ,
+    font-color: #000,
+    line-height: 1rem,
+    font-size:1rem,
+    margin:0px 5px,
+    text-rendering: optimizeLegibility,
+    "&.lead": (line-height:1.3rem)
+  ),
+  medium: (
+    font-size:1.2rem,
+    range: up,
+    margin:0px 5px
+  )
+);
+
+$atag-properties: (
+  default: (
+    color: #008cba,
+    text-decoration: none,
+    line-height: inherit,
+    font-size:1rem,
+    margin:0px 5px,
+
+    "&:active,&:hover, &#li": (
+      color: #555,
+      font-style: normal
+    ),
+
+    "&:visited" : (
+      color: #0078a0,
+      font-style: normal,
+      "li": (
+        margin:0px
+      )
+    )
+
+  )
+);
+
+$ul-properties: (
+  default: (
+    font-size: 1rem,
+    line-height: 1.6,
+    margin-bottom: 1.25rem,
+    list-style-position: outside,
+    font-family: inherit,
+    margin-left: 1.1rem,
+    "li ul,li ol": (
+      margin-left: 1.25rem,
+      margin-bottom: 0
+    ),
+    "&.square": (
+      list-style-type: square,
+      margin-left: 1.1rem
+    ),
+    "&.circle": (
+      list-style-type: circle,
+      margin-left: 1.1rem
+    ),
+    "&.disc": (
+      list-style-type: disc,
+      margin-left: 1.1rem
+    ),
+    "&.no-bullet": (
+      list-style-type: none,
+      margin-left: 1.1rem
+    ),
+    "ul.no-bullet": (
+      margin-left:0,
+      "li ul, li ol": (
+        margin-left: 1.25rem,
+        margin-bottom: 0,
+        list-style: none
+      )
+    ),
+    "&.square li ul, &.circle li ul, &.disc li ul": (
+      list-style: inherit
+    )
+  )
+);
+
+$ol-properties: (
+  default: (
+    margin-left: 1.4rem,
+    "li ul,li ol": (
+        margin-left: 1.25rem,
+        margin-bottom: 0
+    )
+  )
+);
+
+
+// ul,
+// ol,
+// dl {
+//   font-size: 1rem;
+//   line-height: 1.6;
+//   margin-bottom: 1.25rem;
+//   list-style-position: outside;
+//   font-family: inherit; }
+
+// ul {
+//   margin-left: 1.1rem; }
+//   ul.no-bullet {
+//     margin-left: 0; }
+//     ul.no-bullet li ul,
+//     ul.no-bullet li ol {
+//       margin-left: 1.25rem;
+//       margin-bottom: 0;
+//       list-style: none; }
+
+// /* Unordered Lists */
+// ul li ul,
+// ul li ol {
+//   margin-left: 1.25rem;
+//   margin-bottom: 0; }
+// ul.square li ul, ul.circle li ul, ul.disc li ul {
+//   list-style: inherit; }
+// ul.square {
+//   list-style-type: square;
+//   margin-left: 1.1rem; }
+// ul.circle {
+//   list-style-type: circle;
+//   margin-left: 1.1rem; }
+// ul.disc {
+//   list-style-type: disc;
+//   margin-left: 1.1rem; }
+// ul.no-bullet {
+//   list-style: none; }
+
+// /* Ordered Lists */
+// ol {
+//   margin-left: 1.4rem; }
+//   ol li ul,
+//   ol li ol {
+//     margin-left: 1.25rem;
+//     margin-bottom: 0; }
+
+$small-headers: (
+                need: true,
+                scale: 0.8,
+                small: 0.9);
+
+
+$default-sizes: ();
+$all-headers: "";
+$all-small-headers: "";
+$map-length: "";
+$list-length: "";
+$list-properties:"";
+
+
+
+///mixin to create clear columns classes
+///parameters include $screen- and $range: "up","only","down";
+
+@mixin iterate-properties($all-properties){
+
+    @each $property, $values in $all-properties {
+
+    @if type-of($values) != map  and $property != range  and type-of($property) != list {
+            #{$property}: $values;
+        } @else if $property != range {
+
+                #{$property}{
+                    @include iterate-properties($values);
+                }
+        }
+    }
+}
+
+
+@mixin tag-classes($tag,$tag-properties){
+
+    @each $screen, $all-properties in $tag-properties {
+
+    @if $screen == "default" {
+        #{$tag} {
+          @include iterate-properties($all-properties);
+        }
+
+    } @else if map-has-key($screen-list,$screen) {
+        $range: ();
+        @if map-has-key($all-properties,range) {
+            $range: map-get($all-properties,range);
+        } @else {
+            $range: only;
+        }
+      $querie: get-map-values($screen,media-querie-#{$range});
+        @media #{$querie} {
+         #{$tag} {
+            @include iterate-properties($all-properties)
+        }
+        }
+    }
+    }
+}
+
+
+
+
+@each $screen, $values in $header-sizes {
+    @if $screen == "default" {
+        @each $font-tag, $screen-font-size in $values {
+            $default-sizes: $values;
+            #{$font-tag},.#{$font-tag} {
+                font-size: $screen-font-size;
+            }
+            @if map-get($small-headers, need) {
+                #{$font-tag} small, .#{$font-tag} small, #{$font-tag} .small, .#{$font-tag} .small,   {
+                    font-size: $screen-font-size * map-get($small-headers, scale) ;
+                }
+            }
+
+            $all-headers: append-tags($all-headers,$font-tag);
+            $all-headers: append-tags($all-headers,"."+$font-tag);
+            $all-small-headers: append-tags($all-small-headers,$font-tag +" small");
+            $all-small-headers: append-tags($all-small-headers,"."+$font-tag + ".small");
+        }
+
+    }
+    @else if map-has-key($screen-list,$screen) {
+        $range: ();
+        @if map-has-key($values,range) {
+            $range: map-get($values,range);
+
+        } @else {
+            $range: only;
+        }
+      $querie: get-map-values($screen,media-querie-#{$range});
+        @media #{$querie} {
+            @if map-has-key($values,scale) {
+                @each $font-tag, $screen-font-size in $default-sizes {
+                    #{$font-tag},.#{$font-tag} {
+                        font-size: $screen-font-size * map-get($values,scale);
+                    }
+                }
+            } @else {
+                @each $font-tag, $screen-font-size in $values {
+                  #{$font-tag},.#{$font-tag} {
+                    font-size: $screen-font-size;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+@include tag-classes($all-headers,$header-properties);
+
+@include tag-classes("p",$ptag-properties);
+
+@include tag-classes("a",$atag-properties);
+
+
+@include tag-classes("ul",$ul-properties);
+
+@include tag-classes("ol",$ol-properties);

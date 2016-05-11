@@ -1,0 +1,20 @@
+{
+  "name": "resume",
+  "version": "0.1.0",
+  "description": "myResume",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sudheer",
+  "license": "MIT",
+  "dependencies": {
+    "x-grid": "^0.1.0"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.12.7",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^2.3.1",
+    "gulp-sourcemaps": "^1.6.0"
+  }
+}
