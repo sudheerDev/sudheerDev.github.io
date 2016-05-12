@@ -15,7 +15,7 @@ gulp.task('sass', function() {
       }))
     // Writes sourcemaps into the CSS file
     .pipe(sourcemaps.write())
-    .pipe(gulp.dest('./css'))
+    .pipe(gulp.dest('app/css'))
     .pipe(reload({ stream:true }));
 });
 
@@ -34,5 +34,5 @@ gulp.task('serve', ['sass'], function() {
     }
   });
 
-  gulp.watch('app/scss/*.scss', ['sass']);
+  gulp.watch(['app/scss/*.scss', 'app/index.html'], ['sass']);
 });
